@@ -1,22 +1,16 @@
 const std = @import("std");
 const server = @import("server.zig");
 const parsing = @import("parsing.zig");
-
+const packet = @import("packet.zig");
+const time = @import("time.zig");
 pub fn main() !void {
-    // Create an allocator
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+    const buffer = try packet.writeOpcodeAndTime();
+    const headerWithPacket = try packet.writeHeaderAndPacket([20]u8, buffer);
 
-    // Create an ArrayList to act as our buffer
-    var buffer = std.ArrayList(u8).init(allocator);
-    defer buffer.deinit();
-
-    const writer = buffer.writer().any();
-
-    try parsing.writeString(writer, "Hello, world!");
-
-    std.debug.print("{s}\n", .{buffer.items});
+    for (headerWithPacket) |byte| {
+        std.debug.print("{x} ", .{byte});
+    }
+    std.debug.print("\n", .{});
 
     try server.createServer("0.0.0.0", 1973);
 }
