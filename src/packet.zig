@@ -1,7 +1,8 @@
 const time = @import("time.zig");
 const std = @import("std");
+const bytes = @import("bytes.zig");
 
-pub fn writeOpcodeAndTime() !time.FixedSizeBuffer([20]u8) {
+pub fn writeOpcodeAndTime() !bytes.FixedSizeBuffer([20]u8) {
     // Create a temporary buffer to hold the packet data
     var packetBuffer: [20]u8 = undefined; // Adjust size as needed
     var packetStream = std.io.fixedBufferStream(&packetBuffer);
@@ -18,10 +19,10 @@ pub fn writeOpcodeAndTime() !time.FixedSizeBuffer([20]u8) {
     // Write current time as u8
     _ = try packetStream.write(now.buffer[0..now.len]);
 
-    return time.FixedSizeBuffer([20]u8){ .buffer = packetBuffer, .len = try packetStream.getPos() };
+    return bytes.FixedSizeBuffer([20]u8){ .buffer = packetBuffer, .len = try packetStream.getPos() };
 }
 
-pub fn writeHeaderAndPacket(comptime T: type, packet: time.FixedSizeBuffer(T)) ![]u8 {
+pub fn writeHeaderAndPacket(comptime T: type, packet: bytes.FixedSizeBuffer(T)) ![]u8 {
     // Create a temporary buffer to hold the packet data
     var packetBuffer: [16948]u8 = undefined; // Adjust size as needed
     var packetStream = std.io.fixedBufferStream(&packetBuffer);

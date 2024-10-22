@@ -1,5 +1,6 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
+const bytes = @import("bytes.zig");
 
 pub const DateTime = struct {
     year: u16,
@@ -42,14 +43,7 @@ pub fn fromTimestamp(ts: u64) DateTime {
     return DateTime{ .year = year, .month = month, .day = day, .hour = @intCast(seconds_since_midnight / 3600), .minute = @intCast(seconds_since_midnight % 3600 / 60), .second = @intCast(seconds_since_midnight % 60) };
 }
 
-pub fn FixedSizeBuffer(comptime T: type) type {
-    return struct {
-        buffer: T,
-        len: usize,
-    };
-}
-
-pub fn getCurrentTime() !FixedSizeBuffer([32]u8) {
+pub fn getCurrentTime() !bytes.FixedSizeBuffer([32]u8) {
     const now = std.time.timestamp();
     const dateTime = fromTimestamp(@as(u64, @intCast(now)));
 
@@ -65,7 +59,7 @@ pub fn getCurrentTime() !FixedSizeBuffer([32]u8) {
     std.debug.print("{d}\n", .{written.len});
 
     // Ensure the return type is a fixed-size array
-    return FixedSizeBuffer([32]u8){
+    return bytes.FixedSizeBuffer([32]u8){
         .buffer = buffer,
         .len = written.len,
     };
